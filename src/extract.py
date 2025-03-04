@@ -8,10 +8,12 @@ from utils import setup_logger
 # Initialize setup logger
 logger = setup_logger(__name__)
 
+
+
 # Returns a the daily stock price up to today
 # Ticker -> Stock symbol
 # Duration -> In days
-def get_stock_price_date(ticker, duration):
+def get_stock_price_today(ticker, duration):
 
     end_date = datetime.today().strftime('%Y-%m-%d')
     start_date = (datetime.today() - timedelta(days=duration)).strftime('%Y-%m-%d')
@@ -19,10 +21,16 @@ def get_stock_price_date(ticker, duration):
     return yf.download(ticker, start=start_date, end=end_date)
 
 
+# Return stock price for specicific
+# Ticker -> Stock symbol
+# date -> Year-Month-Day
+def get_stock_price_with_specific_date(ticker, start_date, end_date):
+    return yf.download(ticker, start=start_date, end=end_date)
+
 
 def main():
 
-    data = get_stock_price_date("GOOG", 365)
+    data = get_stock_price_today("AMZN", 365)
 
     filename = "stockprices.csv"
     data.to_csv(filename)
