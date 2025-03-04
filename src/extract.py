@@ -8,8 +8,6 @@ from utils import setup_logger
 # Initialize setup logger
 logger = setup_logger(__name__)
 
-
-
 # Returns a the daily stock price up to today
 # Ticker -> Stock symbol
 # Duration -> In days
@@ -23,8 +21,10 @@ def get_stock_price_date(ticker, duration):
 
 data = get_stock_price_date("GOOG", 365)
 
-data.to_csv("stockprices.csv")
+filename = "stockprices.csv"
 
-logger.
+data.to_csv(filename)
+
+logger.info(f"Data saved to {filename}")
 
 
