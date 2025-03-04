@@ -19,12 +19,15 @@ def get_stock_price_date(ticker, duration):
     return yf.download(ticker, start=start_date, end=end_date)
 
 
-data = get_stock_price_date("GOOG", 365)
 
-filename = "stockprices.csv"
+def main():
 
-data.to_csv(filename)
+    data = get_stock_price_date("GOOG", 365)
 
-logger.info(f"Data saved to {filename}")
+    filename = "stockprices.csv"
+    data.to_csv(filename)
 
+    logger.info(f"Data saved to {filename}")
 
+if __name__ == "__main__":
+    main()

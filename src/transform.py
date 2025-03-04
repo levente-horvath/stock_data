@@ -36,11 +36,19 @@ def transform_data(data):
     return df
 
 
-data = load_data()
-tr_data = transform_data(data)
-
-filename = "transform_data.csv"
-data.to_csv(filename)
-logger.info(f"Transformed data has been saved to {filename}")
+def main():
+    data = load_data()
+    tr_data = transform_data(data)
 
 
+    filename = "transform_data.csv"
+    
+    tr_data.to_csv(filename)
+    
+    logger.info(f"Transformed data has been saved to {filename}")
+
+
+
+
+if __name__ == "__main__":
+    main()
