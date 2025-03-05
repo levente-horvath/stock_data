@@ -3,6 +3,9 @@ from utils import setup_logger
 import yfinance as yf
 from datetime import datetime, timedelta
 from utils import setup_logger
+from airflow.decorators import task
+from airflow.utils.task_group import TaskGroup
+from airflow.hooks.base import BaseHook
 
 
 # Initialize setup logger
@@ -26,6 +29,16 @@ def get_stock_price_today(ticker, duration):
 # date -> Year-Month-Day
 def get_stock_price_with_specific_date(ticker, start_date, end_date):
     return yf.download(ticker, start=start_date, end=end_date)
+
+
+@task
+def extract_task():
+    data = get_stock_price_today("AMZN", 365)
+
+    filename = "stockprices.csv"
+    data.to_csv(filename)
+
+    logger.info(f"Data saved to {filename}")
 
 
 def main():

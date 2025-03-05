@@ -4,6 +4,13 @@ import sys
 from utils import setup_logger
 from sqlalchemy.sql import text
 import json
+from airflow.models.dag import DAG
+from airflow.decorators import task
+from airflow.utils.task_group import TaskGroup
+from airflow.hooks.base import BaseHook
+import extract
+import transform
+import datetime
 
 logger = setup_logger(__name__)
 
@@ -34,32 +41,76 @@ def load_metadata(file_name="data.meta.json"):
         sys.exit(1)
 
 
-ticker = load_metadata()[0]
+def main():
+    ticker = load_metadata()[0]
 
 
-username = "lev"
-password = "12"
-host = "localhost"
-port = "5432"
-db = "stocks"
+    username = "lev"
+    password = "12"
+    host = "localhost"
+    port = "5432"
+    db = "stocks"
 
-engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{db}')
+    engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{db}')
 
 
-with engine.connect() as connection:
-    result = connection.execute(text("SELECT value FROM tickers WHERE value = :ticker"), {'ticker': ticker})
+    with engine.connect() as connection:
+        result = connection.execute(text("SELECT value FROM tickers WHERE value = :ticker"), {'ticker': ticker})
+        
+        if result.fetchone() is None:
+        connection.execute(text("INSERT INTO tickers (value) VALUES (:ticker)"), {'ticker': ticker})
+        connection.commit()
+        
+
+    df = load_data(ticker=ticker)
+
+    df.to_sql(
+        'stocks',               # Table name
+        engine,                
+        if_exists='replace',    # Options: 'fail', 'replace', 'append'
+        index=True,           
+        method='multi'        
+    )
+
+
+@task
+def load_task():
+    ticker = load_metadata()[0]
+
+
+    username = "lev"
+    password = "12"
+    host = "localhost"
+    port = "5432"
+    db = "stocks"
+
+    engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{db}')
+
+
+    with engine.connect() as connection:
+        result = connection.execute(text("SELECT value FROM tickers WHERE value = :ticker"), {'ticker': ticker})
+        
+        if result.fetchone() is None:
+            connection.execute(text("INSERT INTO tickers (value) VALUES (:ticker)"), {'ticker': ticker})
+            connection.commit()
+            
+
+    df = load_data(ticker=ticker)
+
+    df.to_sql(
+        'stocks',               # Table name
+        engine,                
+        if_exists='replace',    # Options: 'fail', 'replace', 'append'
+        index=True,           
+        method='multi'        
+    )
+
+if __name__ == "__name__":
+    main()
+
+
+# Starting how_to_task_group
+with DAG(dag_id="stock_etl", schedule_interval="0 9 * * *", start_date=datetime(2025, 3, 1), catchup=False) as dag:
+    with TaskGroup("extract_data", tooltip="Extract the data") as extract_src:
+        extract_src = extract.extract_task()
     
-    if result.fetchone() is None:
-       connection.execute(text("INSERT INTO tickers (value) VALUES (:ticker)"), {'ticker': ticker})
-       connection.commit()
-       
-
-df = load_data(ticker=ticker)
-
-df.to_sql(
-    'stocks',               # Table name
-    engine,                
-    if_exists='replace',    # Options: 'fail', 'replace', 'append'
-    index=True,           
-    method='multi'        
-)
