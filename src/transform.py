@@ -2,12 +2,13 @@ import pandas as pd
 from utils import setup_logger
 import sys
 import json
+"""
 from airflow.decorators import task
 from airflow.utils.task_group import TaskGroup
 from airflow.hooks.base import BaseHook
 from airflow import DAG
 from datetime import datetime
-
+"""
 
 
 logger = setup_logger(__name__)
@@ -50,6 +51,7 @@ def transform_data(data):
     return ticker, df
 
 
+"""
 @task
 def transform_task():
     data = load_data()
@@ -67,7 +69,7 @@ def transform_task():
         json.dump(metadata, meta)
 
     logger.info("Metadata has been saved to data.meta.json")
-    
+"""
 
 
 def main():

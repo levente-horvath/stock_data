@@ -4,6 +4,8 @@ import sys
 from utils import setup_logger
 from sqlalchemy.sql import text
 import json
+
+"""
 from airflow.models.dag import DAG
 from airflow.decorators import task
 from airflow.utils.task_group import TaskGroup
@@ -11,6 +13,7 @@ from airflow.hooks.base import BaseHook
 import extract
 import transform
 from datetime import datetime
+"""
 
 logger = setup_logger(__name__)
 
@@ -73,6 +76,15 @@ def main():
     )
 
 
+
+if __name__ == "__name__":
+    main()
+
+
+
+"""
+
+
 @task
 def load_task():
     ticker = load_metadata()[0]
@@ -105,10 +117,6 @@ def load_task():
         method='multi'        
     )
 
-if __name__ == "__name__":
-    main()
-
-
 
 # Starting how_to_task_group
 with DAG(dag_id="stock_etl", schedule="0 9 * * *", start_date=datetime(2025, 3, 1), catchup=False) as dag:
@@ -123,3 +131,4 @@ with DAG(dag_id="stock_etl", schedule="0 9 * * *", start_date=datetime(2025, 3, 
         load_src = load_task()
     
     extract_src >> transform_src >> load_src
+"""
