@@ -21,11 +21,12 @@ def load_data(file_name="stockprices.csv"):
 
 def transform_data(data):
 
-    #saving the name of the tickker
+    #saving the name of the ticker
     ticker = data.iloc[1]
     ticker = ticker['Close']
     
-    df = data.drop([0,1, 2])
+    
+    df = data.drop([0, 1, 2]).reset_index(drop=True)
 
     df['Date'] = pd.to_datetime(df['Date'])
 
@@ -37,10 +38,10 @@ def transform_data(data):
     df['3D_EMA'] = df['Close'].ewm(span=3, adjust=False).mean()
     df['5D_EMA'] = df['Close'].ewm(span=5, adjust=False).mean()
 
-    df['Ticker'] = ticker
-
-
     return ticker, df
+
+
+
 
 
 def main():
@@ -51,6 +52,8 @@ def main():
     
     tr_data.to_csv(filename)
     
+    print(tr_data.info())
+
     logger.info(f"Transformed data has been saved to {filename}")
     
     metadata = [ticker]

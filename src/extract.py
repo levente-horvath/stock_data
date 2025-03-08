@@ -30,12 +30,17 @@ def get_stock_price_with_specific_date(ticker, start_date, end_date):
 
 def main():
 
-    data = get_stock_price_today("AMZN", 365)
+    data = get_stock_price_with_specific_date("ANET", "2025-3-1", "2025-3-6")
+
+    print(data)
 
     filename = "stockprices.csv"
     data.to_csv(filename)
 
     logger.info(f"Data saved to {filename}")
+
+
+
 
 if __name__ == "__main__":
     main()
