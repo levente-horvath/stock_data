@@ -61,6 +61,20 @@ def plot_volume(df, filename):
     plt.savefig(filename)
     plt.close()
 
+def plot_moving_average_plotly(df, window):
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.set_index('Date', inplace=True)
+    df['Moving Average'] = df['Close'].rolling(window=window).mean()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df.index, y=df['Close'], mode='lines', name='Close Price'))
+    fig.add_trace(go.Scatter(x=df.index, y=df['Moving Average'], mode='lines', name=f'{window}-Day Moving Average'))
+
+    fig.update_layout(title='Stock Price and Moving Average',
+                        xaxis_title='Date',
+                        yaxis_title='Price')
+
+    return fig
 
 def main():
     #data = get_stock_price_with_specific_date("ANET", "2024-3-1", "2025-3-6")

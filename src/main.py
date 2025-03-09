@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import pandas as pd
 from extract import get_stock_price_today, get_stock_price_with_specific_date
-from analysis import plot_price, plot_moving_average, plot_volume, plot_price_plotly
+from analysis import plot_price, plot_moving_average, plot_volume, plot_price_plotly, plot_moving_average_plotly
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 import plotly.express as px
@@ -62,4 +62,11 @@ def plot_volume_endpoint(ticker: str, duration: int):
 def plot_price_plotly_endpoint(ticker: str, duration: int):
     data = get_stock_price_today(ticker, duration)
     fig = plot_price_plotly(data)
+    return JSONResponse(content=fig.to_json())
+
+
+@app.get("/plot_moving_average_plotly/{ticker}/{duration}/{window}")
+def plot_moving_average_plotly_endpoint(ticker: str, duration: int, window: int):
+    data = get_stock_price_today(ticker, duration)
+    fig = plot_moving_average_plotly(data, window)
     return JSONResponse(content=fig.to_json())
