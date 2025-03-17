@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import riskfolio as rp
-import pyfolio as pf
 from extract import *
 import mplfinance as mpf
 import matplotlib.dates as mdates
