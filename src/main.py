@@ -57,6 +57,12 @@ def plot_volume_endpoint(ticker: str, duration: int):
     return FileResponse(filename, media_type="image/png")
 
 
+@app.get("/plot_volume_plotly/{ticker}/{duration}")
+def plot_volume_plotly_endpoint(ticker: str, duration: int):
+    data = get_stock_price_today(ticker, duration)
+    fig = px.bar(data, x=data.index, y="Volume", title=f"Volume for {ticker}")
+    return JSONResponse(content=fig.to_json())
+
 
 @app.get("/plot_price_plotly/{ticker}/{duration}")
 def plot_price_plotly_endpoint(ticker: str, duration: int):
