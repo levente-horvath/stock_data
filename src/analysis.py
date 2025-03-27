@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import riskfolio as rp
-import pyfolio as pf
 from extract import *
 import mplfinance as mpf
 import matplotlib.dates as mdates
@@ -62,19 +61,34 @@ def plot_volume(df, filename):
     plt.close()
 
 def plot_moving_average_plotly(df, window):
+    # Convert 'Date' column to datetime and set as index
     df['Date'] = pd.to_datetime(df['Date'])
     df.set_index('Date', inplace=True)
+    
+    # Calculate the moving average
     df['Moving Average'] = df['Close'].rolling(window=window).mean()
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['Close'], mode='lines', name='Close Price'))
-    fig.add_trace(go.Scatter(x=df.index, y=df['Moving Average'], mode='lines', name=f'{window}-Day Moving Average'))
+    # Convert data to plain lists to avoid base64 encoding in JSON
+    x_values = df.index.strftime('%Y-%m-%d').tolist()  # Dates as strings
+    y_close = df['Close'].tolist()                     # Closing prices as list
+    y_moving_avg = df['Moving Average'].tolist()       # Moving averages as list
 
-    fig.update_layout(title='Stock Price and Moving Average',
-                        xaxis_title='Date',
-                        yaxis_title='Price')
+    # Create the Plotly figure
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x_values, y=y_close, mode='lines', name='Close Price'))
+    fig.add_trace(go.Scatter(x=x_values, y=y_moving_avg, mode='lines', name=f'{window}-Day Moving Average'))
+
+    # Update layout with title and axis labels
+    fig.update_layout(
+        title='Stock Price and Moving Average',
+        xaxis_title='Date',
+        yaxis_title='Price'
+    )
 
     return fig
+
+
+
 
 def main():
     #data = get_stock_price_with_specific_date("ANET", "2024-3-1", "2025-3-6")
